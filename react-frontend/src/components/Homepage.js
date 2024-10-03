@@ -1,14 +1,38 @@
 // Homepage.js
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/pages.css'; // Import the CSS file
+import {UserContext} from './UserContext';
 
 const Homepage = () => {
     const navigate = useNavigate();
+    const {user, setUser} = useContext(UserContext);
+
 
     const handleNavigation = (path) => {
         navigate(`/${path}`);
     };
+
+    useEffect(() => {
+        // Check if user is logged in by fetching user-info from the server
+        const checkUser = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/user-info', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser({ username: data.username });
+                }
+            } catch (error) {
+                console.error("Failed to get user info", error);
+            }
+        };
+
+        checkUser();
+    }, [setUser]);
 
     return (
         <div id="app">
@@ -20,8 +44,14 @@ const Homepage = () => {
                     <button onClick={() => handleNavigation('contact')}>Contact</button>
                 </div>
                 <div className="navbar-right">
-                    <button onClick={() => handleNavigation('login')}>Login</button>
-                    <button onClick={() => handleNavigation('signup')}>Signup</button>
+                    {user ? (
+                        <span>Welcome, {user.username}</span>
+                    ) : (
+                        <>
+                            <button onClick={() => handleNavigation('login')}>Login</button>
+                            <button onClick={() => handleNavigation('signup')}>Signup</button>
+                        </>
+                    )}
                 </div>
             </header>
 

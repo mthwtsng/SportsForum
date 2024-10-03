@@ -27,14 +27,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf().disable() // Disable CSRF protection; enable as needed
-            .authorizeRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/api/login", "/api/signup").permitAll() // Allow access to login and signup
-                .anyRequest().authenticated() // All other requests require authentication
-            )
-            .formLogin().disable() // Disable default form login
-            .httpBasic().disable(); // Disable HTTP Basic authentication
-
+            .authorizeHttpRequests()
+                .requestMatchers("/api/login", "api/signup").permitAll()
+                .anyRequest().authenticated()
+                .and()
+            .formLogin().loginPage("/login").permitAll()
+                .and()
+            .sessionManagement()
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(true);
         return http.build();
     }
 }

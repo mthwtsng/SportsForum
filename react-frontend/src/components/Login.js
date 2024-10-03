@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import "./css/Auth.css"
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,6 +27,8 @@ const Login = () => {
 
             const data = await response.json();
             console.log('Logged in successfully', data);
+            navigate('/');
+            
         } catch (err) {
             setError(err.message);
         }
